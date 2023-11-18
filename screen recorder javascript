@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Screen Recorder</title>
+  <style>
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    #video {
+      border: 2px solid #ccc;
+      border-radius: 8px;
+    }
+
+    #controls {
+      margin-top: 20px;
+    }
+
+    button {
+      padding: 10px;
+      font-size: 16px;
+      margin-right: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<video id="video" width="640" height="480" controls></video>
+<div id="controls">
+  <button id="startBtn"class="record-btn">Start Recording</button>
+ </div>
+
+<script>
+        let btn = document.querySelector(".record-btn")
+btn.addEventListener("click", async function () {
+let stream = await navigator.mediaDevices.getDisplayMedia({
+video: true
+})
+const mime = MediaRecorder.isTypeSupported("video/webm; codecs=vp9")
+? "video/webm; codecs=vp9"
+: "video/webm"
+let mediaRecorder = new MediaRecorder(stream, {
+mimeType: mime
+})
+let chunks = []
+mediaRecorder.addEventListener('dataavailable', function(e) {
+chunks.push(e.data)
+})
+mediaRecorder.addEventListener('stop', function(){
+let blob = new Blob(chunks, {
+type: chunks[0].type
+})
+let url = URL.createObjectURL(blob)
+let video = document.querySelector("video")
+video.src = url
+let a = document.createElement('a')
+a.href = url
+a.download = 'video.webm'
+a.click()
+})
+mediaRecorder.start()
+})
+</script>
+
+</body>
+</html>
